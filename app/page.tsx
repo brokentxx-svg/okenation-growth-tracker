@@ -16,6 +16,17 @@ import {
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { demoDashboard, type Account, type DashboardData, type Snapshot } from "../lib/seed-data";
 
+type WebToolContext = {
+  registerTool: (tool: {
+    name: string;
+    title: string;
+    description: string;
+    inputSchema: Record<string, unknown>;
+    annotations: { readOnlyHint: boolean; untrustedContentHint: boolean };
+    execute: (input: unknown) => Promise<unknown>;
+  }, options?: { signal?: AbortSignal }) => void | Promise<void>;
+};
+
 function formatCount(value: number | null | undefined) {
   if (value === null || value === undefined) return "—";
   return new Intl.NumberFormat("en-MY", { notation: "compact", maximumFractionDigits: 1 }).format(value);
@@ -139,6 +150,63 @@ export default function Home() {
     const timer = window.setInterval(() => void refresh(true), 30_000);
     return () => window.clearInterval(timer);
   }, [refresh]);
+
+  useEffect(() => {
+    const context = (document as Document & { modelContext?: WebToolContext }).modelContext;
+    if (!context?.registerTool) return;
+    const lifecycle = new AbortController();
+    const register = async () => {
+      try {
+        await context.registerTool({
+          name: "refresh_okenation_dashboard",
+          title: "Refresh Okenation dashboard",
+          description: "Read the latest saved Okenation snapshots and update the visible comparison without changing data.",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: true, untrustedContentHint: false },
+          async execute() {
+            const response = await fetch(`/api/dashboard?ts=${Date.now()}`, { cache: "no-store" });
+            if (!response.ok) throw new Error("Dashboard refresh unavailable");
+            const next = (await response.json()) as DashboardData;
+            setData(next);
+            return { status: "refreshed", storage: next.storage ?? "fallback", trackedAccounts: next.accounts.filter((account) => next.snapshots.some((snapshot) => snapshot.accountId === account.id)).length };
+          },
+        }, { signal: lifecycle.signal });
+        await context.registerTool({
+          name: "record_okenation_snapshot",
+          title: "Record Okenation snapshot",
+          description: "Save visible TikTok account metrics for one known Okenation member, then update the visible comparison.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              accountId: { type: "string", description: "Known Okenation account id, such as may or nara." },
+              capturedAt: { type: "string", description: "ISO date-time of the visible capture." },
+              followers: { type: ["integer", "null"], minimum: 0 },
+              following: { type: ["integer", "null"], minimum: 0 },
+              likes: { type: ["integer", "null"], minimum: 0 },
+              evidenceNote: { type: "string" },
+            },
+            required: ["accountId"],
+            additionalProperties: false,
+          },
+          annotations: { readOnlyHint: false, untrustedContentHint: false },
+          async execute(input) {
+            const response = await fetch("/api/snapshots", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(input) });
+            const result = await response.json() as { error?: string };
+            if (!response.ok) throw new Error(result.error ?? "Snapshot could not be saved");
+            const dashboardResponse = await fetch(`/api/dashboard?ts=${Date.now()}`, { cache: "no-store" });
+            if (!dashboardResponse.ok) throw new Error("Snapshot saved, but dashboard refresh failed");
+            const next = (await dashboardResponse.json()) as DashboardData;
+            setData(next);
+            return { status: "saved", accountId: (input as { accountId?: string }).accountId ?? null, storage: next.storage ?? "fallback" };
+          },
+        }, { signal: lifecycle.signal });
+      } catch {
+        // WebMCP is optional; unsupported or unavailable registration must not affect the visible dashboard.
+      }
+    };
+    void register();
+    return () => lifecycle.abort();
+  }, []);
 
   const mayHistory = useMemo(() => data.snapshots.filter((snapshot) => snapshot.accountId === "may"), [data.snapshots]);
   const latestMay = latestSnapshot("may", data.snapshots);
