@@ -118,13 +118,22 @@ function AccountRow({ account, snapshots }: { account: Account; snapshots: Snaps
   const delta = metricDelta(latest, previous, "followers");
   const hasData = Boolean(latest);
   const mirrorUrl = urlebirdUrl(account);
+  const sourceLabel = latest?.source === "Urlebird manual observation"
+    ? "Urlebird observation"
+    : hasData
+      ? "Verified snapshot"
+      : account.id === "shion"
+        ? "No Urlebird profile"
+        : account.id === "butler"
+          ? "No handle supplied"
+          : "Awaiting snapshot";
 
   return (
     <div className="account-row">
       <div className="account-identity"><span className={`avatar avatar-${account.id}`}>{initials(account.name)}</span><div><div className="account-name-line"><strong>{account.name}</strong>{account.profileUrl && <a className="mini-link" href={account.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${account.name} TikTok profile`} title="TikTok profile"><ExternalLink size={12} /></a>}{mirrorUrl && <a className="mini-link" href={mirrorUrl} target="_blank" rel="noreferrer" aria-label={`Open ${account.name} on Urlebird`} title="Manual Urlebird check">UB</a>}</div><span className="handle">{account.handle ?? "Profile not supplied"}</span></div></div>
       <div className="account-number">{hasData ? formatExact(latest?.followers) : "Awaiting"}</div>
       <div className={`account-change ${delta !== null && delta > 0 ? "positive" : "muted"}`}>{delta !== null ? <ArrowUpRight size={14} /> : null}{formatDelta(delta)}</div>
-      <div className="account-status"><span className={`status-dot ${hasData ? "live" : "quiet"}`} />{hasData ? "Verified snapshot" : "No snapshot yet"}</div>
+      <div className="account-status"><span className={`status-dot ${hasData ? "live" : "quiet"}`} />{sourceLabel}</div>
     </div>
   );
 }

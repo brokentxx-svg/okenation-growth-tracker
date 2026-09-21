@@ -54,7 +54,7 @@ export async function GET() {
       ideas: demoIdeas,
       refreshAttempt: demoDashboard.refreshAttempt,
       storage: "database",
-      storageMessage: "Snapshots are being read from the Site database.",
+      storageMessage: "Snapshots are being read from the Site database; seeded observations remain labelled by source.",
     }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     const detail = error instanceof Error ? error.message : "Database unavailable";
