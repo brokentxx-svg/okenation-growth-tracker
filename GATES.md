@@ -19,18 +19,18 @@ Scope: Complete the public Okenation growth dashboard with durable, evidence-lab
   EXPECT: Okenation tracker package verification passed
   EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; path=429797028ae0/37 entries; output=Okenation tracker package verification passed
 
-- [ ] G4: First viewport is a working public tracker; source labels, Urlebird manual fallback, unavailable live refresh, snapshot entry, and responsive controls are understandable and usable.
-  EVIDENCE: pending final public review.
+- [x] G4: First viewport is a working public tracker; source labels, Urlebird manual fallback, unavailable live refresh, snapshot entry, and responsive controls are understandable and usable.
+  EVIDENCE: public browser DOM confirmed Okenation Growth Room, 14/16 coverage, visible Urlebird observation labels and UB links, explicit No Urlebird profile and No handle supplied boundaries, refresh boundary, and the snapshot form; no Awaiting snapshot status remained.
 
-- [ ] G5: Published Site deployment reports success, returns a production URL, and preserves public access.
-  EVIDENCE: pending final public deployment response and access check.
+- [x] G5: Published Site deployment reports success, returns a production URL, and preserves public access.
+  EVIDENCE: Sites publish status=succeeded; URL=https://okenation-growth-room.aasf012.chatgpt.site; latest version=4; get_site access_mode=public and status=active.
 
 - [x] G6: Source contains timestamped Urlebird observations for every account with a resolvable public mirror and explicitly records the two unresolved accounts.
   CHECK: node scripts/verify-coverage-source.mjs
   EXPECT: Okenation source coverage verification passed
   EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; path=429797028ae0/37 entries; output=Okenation source coverage verification passed: 14 Urlebird observations; 2 unresolved.
 
-- [ ] G7: The deployed public dashboard exposes the imported observations and reports the unresolved accounts instead of silently presenting them as measured.
+- [x] G7: The deployed public dashboard exposes the imported observations and reports the unresolved accounts instead of silently presenting them as measured.
   CHECK: node scripts/verify-public-coverage.mjs
   EXPECT: Okenation public coverage verification passed
-  EVIDENCE: pending
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; path=429797028ae0/37 entries; output=Okenation public coverage verification passed: 14/16 accounts with observations; 2 unresolved.
