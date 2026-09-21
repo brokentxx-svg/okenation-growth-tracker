@@ -20,10 +20,10 @@ Scope: Complete the public Okenation growth dashboard with durable, evidence-lab
   EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; path=429797028ae0/37 entries; output=Okenation tracker package verification passed
 
 - [x] G4: First viewport is a working public tracker; source labels, Urlebird manual fallback, unavailable live refresh, snapshot entry, and responsive controls are understandable and usable.
-  EVIDENCE: public browser DOM confirmed Okenation Growth Room, 14/16 coverage, visible Urlebird observation labels and UB links, explicit No Urlebird profile and No handle supplied boundaries, refresh boundary, and the snapshot form; no Awaiting snapshot status remained.
+  EVIDENCE: public browser DOM confirmed Okenation Growth Room, 14 observed · 2 unresolved, visible Urlebird observation labels and UB links, explicit No Urlebird profile and No handle supplied boundaries, refresh boundary, and the snapshot form; no Awaiting text remained.
 
 - [x] G5: Published Site deployment reports success, returns a production URL, and preserves public access.
-  EVIDENCE: Sites publish status=succeeded; URL=https://okenation-growth-room.aasf012.chatgpt.site; latest version=4; get_site access_mode=public and status=active.
+  EVIDENCE: Sites publish status=succeeded; URL=https://okenation-growth-room.aasf012.chatgpt.site; latest version=5; get_site access_mode=public and status=active.
 
 - [x] G6: Source contains timestamped Urlebird observations for every account with a resolvable public mirror and explicitly records the two unresolved accounts.
   CHECK: node scripts/verify-coverage-source.mjs
