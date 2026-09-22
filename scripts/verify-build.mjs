@@ -7,6 +7,7 @@ const required = [
   "dist/client",
   "dist/.openai/hosting.json",
   "dist/.openai/drizzle/0000_romantic_ghost_rider.sql",
+  "dist/.openai/drizzle/0001_free_domino.sql",
 ];
 const missing = required.filter((file) => !existsSync(path.join(root, file)));
 if (missing.length) throw new Error(`missing built output: ${missing.join(", ")}`);

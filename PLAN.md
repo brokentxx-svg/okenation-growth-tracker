@@ -31,3 +31,13 @@ An evidence room for a living creator world: charcoal and ink surfaces, warm gol
 - The build succeeds and contains the declared D1 schema and Worker entrypoint.
 - Dashboard data, comparisons, evidence labels, snapshot entry, and suggestions render without fabricated live metrics.
 - Final source is packaged from the pushed commit and deployment status succeeds.
+
+## Mention network implementation tree
+
+- [ ] Root: freeze the exact-handle mention contract and current 16-account working roster.
+  - [ ] Leaf A: add D1 tables, migration, types, fallback fixtures, and resolver self-checks.
+  - [ ] Leaf B: add public read API plus authenticated manual check/observation writes.
+  - [ ] Leaf C: add graph, checklist, evidence list, filters, and accessible mobile fallback.
+  - [ ] Leaf D: run source, API, lint, build, package, and public deployment verification.
+
+Dependencies: A unblocks B; A and B unblock C; A/B/C unblock D. No automated crawler or paid analytics dependency is in scope.

@@ -14,7 +14,9 @@ import {
   Video,
 } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { demoDashboard, type Account, type DashboardData, type Snapshot } from "../lib/seed-data";
+import { MentionNetwork } from "../components/mention-network";
+import { demoDashboard, demoNetwork, type Account, type DashboardData, type Snapshot } from "../lib/seed-data";
+import type { NetworkData } from "../lib/network";
 
 type WebToolContext = {
   registerTool: (tool: {
@@ -141,6 +143,7 @@ function AccountRow({ account, snapshots }: { account: Account; snapshots: Snaps
 
 export default function Home() {
   const [data, setData] = useState<DashboardData>(demoDashboard);
+  const [network, setNetwork] = useState<NetworkData>(demoNetwork);
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState("");
   const [snapshotForm, setSnapshotForm] = useState({ accountId: "may", capturedAt: new Date().toISOString().slice(0, 16), followers: "", following: "", likes: "", source: "manual TikTok capture", evidenceNote: "Only enter figures visible at the time of capture." });
@@ -160,11 +163,27 @@ export default function Home() {
     }
   }, []);
 
+  const refreshNetwork = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/network?ts=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("Network refresh unavailable");
+      setNetwork((await response.json()) as NetworkData);
+    } catch {
+      // Keep the last verified network view when saved storage is unavailable.
+    }
+  }, []);
+
   useEffect(() => {
-    void refresh(true);
+    const kickoff = window.setTimeout(() => {
+      void refresh(true);
+      void refreshNetwork();
+    }, 0);
     const timer = window.setInterval(() => void refresh(true), 30_000);
-    return () => window.clearInterval(timer);
-  }, [refresh]);
+    return () => {
+      window.clearTimeout(kickoff);
+      window.clearInterval(timer);
+    };
+  }, [refresh, refreshNetwork]);
 
   useEffect(() => {
     const context = (document as Document & { modelContext?: WebToolContext }).modelContext;
@@ -183,6 +202,7 @@ export default function Home() {
             if (!response.ok) throw new Error("Dashboard refresh unavailable");
             const next = (await response.json()) as DashboardData;
             setData(next);
+            await refreshNetwork();
             return { status: "refreshed", storage: next.storage ?? "fallback", trackedAccounts: next.accounts.filter((account) => next.snapshots.some((snapshot) => snapshot.accountId === account.id)).length };
           },
         }, { signal: lifecycle.signal });
@@ -221,7 +241,7 @@ export default function Home() {
     };
     void register();
     return () => lifecycle.abort();
-  }, []);
+  }, [refreshNetwork]);
 
   const mayHistory = useMemo(() => data.snapshots.filter((snapshot) => snapshot.accountId === "may"), [data.snapshots]);
   const latestMay = latestSnapshot("may", data.snapshots);
@@ -256,9 +276,9 @@ export default function Home() {
 
   return (
     <main className="app-shell">
-      <header className="topbar"><div className="brand-lockup"><span className="brand-mark">O</span><div><div className="brand-name">OKENATION</div><div className="brand-section">Growth room / MYT</div></div></div><div className="topbar-actions"><span className="sync-pill"><span className="status-dot live" />Auto-refresh 30s</span><button className="icon-button" type="button" onClick={() => void refresh()} disabled={refreshing} aria-label="Refresh dashboard"><RefreshCw size={16} className={refreshing ? "spin" : ""} /></button><span className="profile-chip">Oken</span></div></header>
+      <header className="topbar"><div className="brand-lockup"><span className="brand-mark">O</span><div><div className="brand-name">OKENATION</div><div className="brand-section">Growth room / MYT</div></div></div><div className="topbar-actions"><span className="sync-pill"><span className="status-dot live" />Saved data / 30s</span><button className="icon-button" type="button" onClick={() => void Promise.all([refresh(), refreshNetwork()])} disabled={refreshing} aria-label="Refresh saved dashboard and network data"><RefreshCw size={16} className={refreshing ? "spin" : ""} /></button><span className="profile-chip">Oken</span></div></header>
       <div className="app-body">
-        <aside className="rail" aria-label="Dashboard sections"><div className="rail-caption">Workspace</div><a className="rail-item active" href="#overview"><Activity size={17} /><span>Overview</span></a><a className="rail-item" href="#comparison"><UsersRound size={17} /><span>Members</span></a><a className="rail-item" href="#ideas"><Video size={17} /><span>Video lab</span></a><div className="rail-divider" /><div className="rail-caption">Evidence</div><div className="rail-note"><span className="status-dot live" />{trackedAccounts.length}/{data.accounts.length} accounts tracked</div><div className="rail-note"><Clock3 size={14} />Updated {latestMay ? formatDate(latestMay.capturedAt).split(",")[0] : "unknown"}</div><div className="rail-bottom"><div className="rail-caption">Data boundary</div><p>Numbers are shown with their source and freshness. Unknown stays unknown.</p></div></aside>
+        <aside className="rail" aria-label="Dashboard sections"><div className="rail-caption">Workspace</div><a className="rail-item active" href="#overview"><Activity size={17} /><span>Overview</span></a><a className="rail-item" href="#network"><UsersRound size={17} /><span>Network</span></a><a className="rail-item" href="#comparison"><UsersRound size={17} /><span>Members</span></a><a className="rail-item" href="#ideas"><Video size={17} /><span>Video lab</span></a><div className="rail-divider" /><div className="rail-caption">Evidence</div><div className="rail-note"><span className="status-dot live" />{trackedAccounts.length}/{data.accounts.length} accounts tracked</div><div className="rail-note"><Clock3 size={14} />Updated {latestMay ? formatDate(latestMay.capturedAt).split(",")[0] : "unknown"}</div><div className="rail-bottom"><div className="rail-caption">Data boundary</div><p>Numbers are shown with their source and freshness. Unknown stays unknown.</p></div></aside>
         <div className="workspace">
           <section className="page-heading" id="overview"><div><div className="eyebrow"><span className="eyebrow-line" />Okenation / daily read</div><h1>Growth, with the story still intact.</h1><p>One clear view of what moved, what is still unmeasured, and what to make next.</p></div><div className="heading-meta"><span className="source-badge"><DatabaseZap size={14} />{data.storage === "database" ? "Saved snapshots" : "Verified fallback"}</span><span>Last verified: {latestMay ? formatDate(latestMay.capturedAt) : "No capture"}</span></div></section>
 
@@ -268,9 +288,11 @@ export default function Home() {
 
           <section className="lower-grid"><article className="panel ideas-panel" id="ideas"><div className="panel-heading"><div><span className="panel-kicker">Next / video lab</span><h2>Ideas worth making</h2></div><Lightbulb size={18} className="heading-icon" /></div><div className="idea-list">{data.ideas.map((idea, index) => <div className="idea-card" key={idea.title}><div className="idea-index">0{index + 1}</div><div className="idea-copy"><div className="idea-title-line"><strong>{idea.title}</strong><span>{idea.tag}</span></div><p>{idea.rationale}</p></div></div>)}</div><p className="disclaimer">Suggestions are creative directions from the stored signals, not promises about distribution.</p></article><article className="panel capture-panel"><div className="panel-heading"><div><span className="panel-kicker">Input / current evidence</span><h2>Record a snapshot</h2></div><Clock3 size={18} className="heading-icon" /></div><p className="capture-intro">Use the Urlebird link beside a member for a temporary manual cross-check. Save only figures visible at the time of capture.</p><form className="capture-form" onSubmit={submitSnapshot}><label>Account<select value={snapshotForm.accountId} onChange={(event) => setSnapshotForm({ ...snapshotForm, accountId: event.target.value })}>{data.accounts.map((account) => <option value={account.id} key={account.id}>{account.name}</option>)}</select></label><label>Source<select value={snapshotForm.source} onChange={(event) => setSnapshotForm({ ...snapshotForm, source: event.target.value })}><option value="manual TikTok capture">TikTok visible profile</option><option value="Urlebird manual observation">Urlebird manual observation</option><option value="TikTok Studio export">TikTok Studio export</option></select></label><label>Captured at<input type="datetime-local" value={snapshotForm.capturedAt} onChange={(event) => setSnapshotForm({ ...snapshotForm, capturedAt: event.target.value })} /></label><div className="form-row"><label>Followers<input inputMode="numeric" placeholder="e.g. 661" value={snapshotForm.followers} onChange={(event) => setSnapshotForm({ ...snapshotForm, followers: event.target.value })} /></label><label>Following<input inputMode="numeric" placeholder="e.g. 250" value={snapshotForm.following} onChange={(event) => setSnapshotForm({ ...snapshotForm, following: event.target.value })} /></label></div><label>Likes<input inputMode="numeric" placeholder="e.g. 7,215" value={snapshotForm.likes} onChange={(event) => setSnapshotForm({ ...snapshotForm, likes: event.target.value.replace(/,/g, "") })} /></label><details><summary>Evidence note</summary><textarea rows={3} value={snapshotForm.evidenceNote} onChange={(event) => setSnapshotForm({ ...snapshotForm, evidenceNote: event.target.value })} /></details><button className="primary-button" type="submit"><DatabaseZap size={16} />Save snapshot</button></form>{message && <p className="form-message" role="status">{message}</p>}</article></section>
 
+          <MentionNetwork accounts={data.accounts} data={network} onReload={refreshNetwork} />
+
           <section className="panel comparison-panel" id="comparison"><div className="panel-heading comparison-heading"><div><span className="panel-kicker">Members / evidence map</span><h2>Who is measurable right now?</h2></div><span className="table-note">{trackedAccounts.length} observed · {data.accounts.length - trackedAccounts.length} unresolved</span></div><div className="account-table" role="table" aria-label="Okenation member growth comparison"><div className="account-header" role="row"><span>Member</span><span>Followers</span><span>Change</span><span>Evidence state</span></div>{topRows.map((account) => <AccountRow account={account} snapshots={data.snapshots} key={account.id} />)}</div></section>
 
-          <section className="boundary-bar"><AlertTriangle size={16} /><div><strong>Refresh boundary</strong><span>{data.refreshAttempt}</span></div><button type="button" className="text-button" onClick={() => void refresh()}>Check again <ArrowUpRight size={14} /></button></section><footer className="footer-note">Okenation Growth Room · public growth room · auto-refreshes every 30 seconds</footer>
+          <section className="boundary-bar"><AlertTriangle size={16} /><div><strong>Refresh boundary</strong><span>{data.refreshAttempt} Network evidence is manual and reloads only after it is saved.</span></div><button type="button" className="text-button" onClick={() => void Promise.all([refresh(), refreshNetwork()])}>Check again <ArrowUpRight size={14} /></button></section><footer className="footer-note">Okenation Growth Room · public growth room · saved data refreshes every 30 seconds</footer>
         </div>
       </div>
     </main>

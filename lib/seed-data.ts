@@ -1,3 +1,5 @@
+import { buildNetworkData, type MemberCheck, type MentionObservation, type NetworkData } from "./network";
+
 export type Account = {
   id: string;
   name: string;
@@ -61,6 +63,10 @@ export const demoAccounts: Account[] = [
   { id: "aurora", name: "Aurora", handle: "@putradawson", profileUrl: "https://www.tiktok.com/@putradawson", role: "member", status: "active" },
   { id: "butler", name: "Butler", handle: null, profileUrl: null, role: "member", status: "active" },
 ];
+
+export const demoMemberChecks: MemberCheck[] = [];
+export const demoMentionObservations: MentionObservation[] = [];
+export const demoNetwork: NetworkData = buildNetworkData(demoAccounts, demoMemberChecks, demoMentionObservations);
 
 export const demoSnapshots: Snapshot[] = [
   {

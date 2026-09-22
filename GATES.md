@@ -34,3 +34,31 @@ Scope: Complete the public Okenation growth dashboard with durable, evidence-lab
   CHECK: node scripts/verify-public-coverage.mjs
   EXPECT: Okenation public coverage verification passed
   EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; path=429797028ae0/37 entries; output=Okenation public coverage verification passed: 14/16 accounts with observations; 2 unresolved.
+
+- [x] G8: The mention-network schema, resolver rules, fixtures, and fallback contract are present and valid.
+  CHECK: node scripts/verify-network.mjs --source
+  EXPECT: Okenation mention network source verification passed
+  EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation mention network source verification passed
+
+- [x] G9: The public network API returns all working-roster nodes, aggregates directional observations, and rejects anonymous writes.
+  CHECK: node --experimental-strip-types scripts/verify-network.mjs --api
+  EXPECT: Okenation mention network API verification passed
+  EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation mention network API verification passed; local GET=200 with memberCount=16 and anonymous POST=401; authenticated local check and observation POSTs=201; database aggregate=1 edge, 1 observation
+
+- [x] G10: The public dashboard renders the network graph, scan checklist, evidence list, filters, and manual capture controls without removing the existing growth surface.
+  CHECK: node scripts/verify-site.mjs
+  EXPECT: Okenation tracker source verification passed
+  EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation tracker source verification passed; browser DOM showed 16 graph nodes, 16 checklist cards, filters, evidence empty state, and both capture forms
+
+- [x] G11: The application passes lint and production build verification after the network change.
+  CHECK: node scripts/verify-lint.mjs
+  EXPECT: Okenation lint verification passed
+  EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation lint verification passed
+
+- [x] G12: The built/package output contains the network routes and updated D1 migration assets.
+  CHECK: node scripts/verify-build.mjs
+  EXPECT: Okenation tracker build output verification passed
+  EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation tracker build output verification passed; verify-package.mjs also passed
+
+- [ ] G13: The deployed public Site exposes all 16 network nodes and preserves the source/evidence boundary.
+  EVIDENCE:
