@@ -60,5 +60,5 @@ Scope: Complete the public Okenation growth dashboard with durable, evidence-lab
   EXPECT: Okenation tracker build output verification passed
   EVIDENCE: exit=0; cwd=C:\Users\Oken\Documents\Socials Med\work\okenation-growth-tracker-20260921; output=Okenation tracker build output verification passed; verify-package.mjs also passed
 
-- [ ] G13: The deployed public Site exposes all 16 network nodes and preserves the source/evidence boundary.
-  EVIDENCE:
+- [x] G13: The deployed public Site exposes all 16 network nodes and preserves the source/evidence boundary.
+  EVIDENCE: Sites deployment succeeded; URL=https://okenation-growth-room.aasf012.chatgpt.site; version=6; public browser DOM showed 16 graph nodes and 16 checklist cards; public GET /api/network returned 200 with memberCount=16, edgeCount=0, observationCount=0; anonymous POST /api/network/observations returned 401.
