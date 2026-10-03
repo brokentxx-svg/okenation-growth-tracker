@@ -49,7 +49,7 @@ export const demoAccounts: Account[] = [
   { id: "may", name: "May", handle: "@may_brokentx", profileUrl: "https://www.tiktok.com/@may_brokentx", role: "lead account", status: "active" },
   { id: "broken", name: "Broken / Oken", handle: "@brokentx", profileUrl: "https://www.tiktok.com/@brokentx", role: "human centre", status: "active" },
   { id: "nara", name: "Nara / Aisyah", handle: "@ai.aisyahinara", profileUrl: "https://www.tiktok.com/@ai.aisyahinara", role: "member", status: "active" },
-  { id: "shion", name: "Shion / Zeros", handle: "@zeros000002", profileUrl: "https://www.tiktok.com/@zeros000002", role: "member", status: "active" },
+  { id: "shion", name: "Shion / Zeros", handle: "@shion0000066", profileUrl: "https://www.tiktok.com/@shion0000066", role: "member", status: "active" },
   { id: "kuro", name: "Kuro", handle: "@renjikuro1", profileUrl: "https://www.tiktok.com/@renjikuro1", role: "member", status: "active" },
   { id: "ailee", name: "Ailee Alfeera", handle: "@ailee.alfeera", profileUrl: "https://www.tiktok.com/@ailee.alfeera", role: "member", status: "active" },
   { id: "adam", name: "Adam", handle: "@adam.fareeq2", profileUrl: "https://www.tiktok.com/@adam.fareeq2", role: "member", status: "active" },
@@ -388,6 +388,17 @@ export const demoSnapshots: Snapshot[] = [
     source: "OpenMuse live profile observation",
     evidenceNote: "Visible profile totals captured live via OpenMuse on 03 Oct 2026.",
   },
+  {
+    id: "live-shion-2026-10-04",
+    accountId: "shion",
+    capturedAt: "2026-10-04T03:39:00+08:00",
+    followers: 1093,
+    following: 43,
+    likes: 8257,
+    posts: 131,
+    source: "TikTok live profile observation",
+    evidenceNote: "Visible profile totals captured live from @shion0000066 on 04 Oct 2026. 1,093 followers, 8,257 likes, 131 videos.",
+  },
 ];
 
 export const demoPosts: PostSignal[] = [
@@ -412,7 +423,7 @@ export const demoDashboard: DashboardData = {
   snapshots: demoSnapshots,
   posts: demoPosts,
   ideas: demoIdeas,
-  refreshAttempt: "03 Oct 2026: visible public profiles were observed live via OpenMuse and Laya. 14 of 16 roster entries have timestamped observations; @zeros000002 was not found there and Butler has no supplied handle.",
+  refreshAttempt: "04 Oct 2026: visible public profiles observed live. Shion resolved to @shion0000066 (previously @zeros000002 was not found there). Butler has no supplied handle. 15 of 16 roster entries now have verified observations.",
   storage: "fallback",
   storageMessage: "Saved snapshots are read from the Site database; third-party Urlebird observations remain labelled by source and capture time.",
 };
