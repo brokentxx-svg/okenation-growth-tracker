@@ -81,21 +81,58 @@ function initials(name: string) {
   return name.split(/[ /]/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function GrowthChart({ metrics }: { metrics: { label: string; value: number; tone: string }[] }) {
-  const max = Math.max(...metrics.map((metric) => metric.value), 1);
+function GrowthChart({ accounts, snapshots, posts }: { accounts: Account[]; snapshots: Snapshot[]; posts: DashboardData["posts"] }) {
+  const postViews = new Map<string, number>();
+  for (const post of posts) postViews.set(post.accountId, (postViews.get(post.accountId) ?? 0) + post.views);
+  const series = [
+    { key: "followers", label: "Followers", color: "#e5b95e", values: accounts.map((account) => latestSnapshot(account.id, snapshots)?.followers ?? null) },
+    { key: "views", label: "Views", color: "#77b9d4", values: accounts.map((account) => postViews.get(account.id) ?? null) },
+    { key: "likes", label: "Likes", color: "#84c99b", values: accounts.map((account) => latestSnapshot(account.id, snapshots)?.likes ?? null) },
+  ];
+  const left = 54;
+  const right = 900;
+  const top = 24;
+  const bottom = 184;
+  const pointsFor = (values: (number | null)[]) => {
+    const max = Math.max(...values.filter((value): value is number => value !== null), 1);
+    return values.map((value, index) => ({
+      value,
+      x: accounts.length < 2 ? (left + right) / 2 : left + (index * (right - left)) / (accounts.length - 1),
+      y: value === null ? null : bottom - (value / max) * (bottom - top),
+    }));
+  };
+  const points = series.map((line) => ({ ...line, points: pointsFor(line.values) }));
+
   return (
-    <div className="chart-wrap">
-      <svg className="growth-chart overview-chart" viewBox="0 0 600 210" role="img" aria-label="Okenation overview of followers, sampled video views, and likes">
-        {[0, 1, 2, 3, 4].map((tick) => {
-          const x = 160 + tick * 75;
-          return <g key={tick}><line x1={x} x2={x} y1="20" y2="184" className="chart-grid" /><text x={x} y="202" textAnchor="middle" className="chart-axis-label">{formatCount(Math.round((max * tick) / 4))}</text></g>;
+    <div className="chart-wrap overview-chart-wrap">
+      <svg className="growth-chart overview-chart" viewBox="0 0 920 280" role="img" aria-label="Follower, view, and like lines across Okenation members. Each line uses its own scale from zero to its highest observed value.">
+        {[0, 25, 50, 75, 100].map((tick) => {
+          const y = bottom - ((bottom - top) * tick) / 100;
+          return <g key={tick}><line x1={left} x2={right} y1={y} y2={y} className="chart-grid" /><text x={left - 9} y={y + 4} textAnchor="end" className="chart-axis-label">{tick}%</text></g>;
         })}
-        {metrics.map((metric, index) => {
-          const y = 48 + index * 55;
-          const width = (metric.value / max) * 300;
-          return <g key={metric.label}><text x="0" y={y + 5} className="chart-metric-label">{metric.label}</text><rect x="160" y={y - 10} width={width} height="19" rx="8" className={`chart-bar ${metric.tone}`} /><text x="480" y={y + 5} className="chart-value">{formatExact(metric.value)}</text></g>;
+        {points.map((line) => {
+          const runs: typeof line.points[] = [];
+          let run: typeof line.points = [];
+          for (const point of line.points) {
+            if (point.value === null || point.y === null) {
+              if (run.length) runs.push(run);
+              run = [];
+            } else {
+              run.push(point);
+            }
+          }
+          if (run.length) runs.push(run);
+          return <g key={line.key}>
+            {runs.filter((segment) => segment.length > 1).map((segment, index) => <polyline key={index} points={segment.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={line.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />)}
+            {line.points.map((point, index) => point.value === null || point.y === null ? null : <circle key={accounts[index].id} cx={point.x} cy={point.y} r="4" fill={line.color}><title>{`${accounts[index].name} · ${line.label}: ${formatExact(point.value)}`}</title></circle>)}
+          </g>;
+        })}
+        {accounts.map((account, index) => {
+          const x = accounts.length < 2 ? (left + right) / 2 : left + (index * (right - left)) / (accounts.length - 1);
+          return <text key={account.id} x={x} y="200" textAnchor="end" className="chart-member-label" transform={`rotate(-42 ${x} 200)`}>{account.name.split(" / ")[0]}</text>;
         })}
       </svg>
+      <div className="chart-legend">{points.map((line) => <span key={line.key}><i style={{ backgroundColor: line.color }} />{line.label}</span>)}</div>
     </div>
   );
 }
@@ -231,12 +268,6 @@ export default function Home() {
 
   const latestMay = latestSnapshot("may", data.snapshots);
   const trackedAccounts = data.accounts.filter((account) => latestSnapshot(account.id, data.snapshots));
-  const latestMemberSnapshots = data.accounts.map((account) => latestSnapshot(account.id, data.snapshots)).filter((snapshot): snapshot is Snapshot => Boolean(snapshot));
-  const overviewMetrics = [
-    { label: "Followers", value: latestMemberSnapshots.reduce((total, snapshot) => total + (snapshot.followers ?? 0), 0), tone: "followers" },
-    { label: "Views", value: data.posts.reduce((total, post) => total + post.views, 0), tone: "views" },
-    { label: "Likes", value: latestMemberSnapshots.reduce((total, snapshot) => total + (snapshot.likes ?? 0), 0), tone: "likes" },
-  ];
   const topRows = [...data.accounts].sort((a, b) => {
     const aHas = latestSnapshot(a.id, data.snapshots) ? 1 : 0;
     const bHas = latestSnapshot(b.id, data.snapshots) ? 1 : 0;
@@ -268,7 +299,7 @@ export default function Home() {
         <div className="workspace">
           <section className="page-heading" id="overview"><div><div className="eyebrow"><span className="eyebrow-line" />Okenation / daily read</div><h1>Growth, with the story still intact.</h1><p>One clear view of what moved, what is still unmeasured, and what to make next.</p></div><div className="heading-meta"><span className="source-badge"><DatabaseZap size={14} />{data.storage === "database" ? "Saved snapshots" : "Verified fallback"}</span><span>Last verified: {latestMay ? formatDate(latestMay.capturedAt) : "No capture"}</span></div></section>
 
-          <section className="panel overview-panel" aria-label="Simple overview"><div className="panel-heading"><div><span className="panel-kicker">Okenation / at a glance</span><h2>Followers, views, likes</h2></div><span className="panel-context">Latest available totals</span></div><GrowthChart metrics={overviewMetrics} /><div className="chart-footnote"><span>Followers and likes use the latest saved snapshot for each of {latestMemberSnapshots.length} tracked members. Views sum the {data.posts.length} sampled May posts shown in this dashboard.</span></div></section>
+          <section className="panel overview-panel" aria-label="Simple overview"><div className="panel-heading"><div><span className="panel-kicker">Okenation / at a glance</span><h2>Followers, views, likes</h2></div><span className="panel-context">Latest available totals</span></div><GrowthChart accounts={data.accounts} snapshots={data.snapshots} posts={data.posts} /><div className="chart-footnote"><span>Each line is scaled to its own 0–100 range; hover over a point to see its count. Views currently have observations only for May - seven sampled posts.</span></div></section>
 
           <section className="lower-grid"><article className="panel ideas-panel" id="ideas"><div className="panel-heading"><div><span className="panel-kicker">Next / video lab</span><h2>Ideas worth making</h2></div><Lightbulb size={18} className="heading-icon" /></div><div className="idea-list">{data.ideas.map((idea, index) => <div className="idea-card" key={idea.title}><div className="idea-index">0{index + 1}</div><div className="idea-copy"><div className="idea-title-line"><strong>{idea.title}</strong><span>{idea.tag}</span></div><p>{idea.rationale}</p></div></div>)}</div><p className="disclaimer">Suggestions are creative directions from the stored signals, not promises about distribution.</p></article><article className="panel capture-panel"><div className="panel-heading"><div><span className="panel-kicker">Input / current evidence</span><h2>Record a snapshot</h2></div><Clock3 size={18} className="heading-icon" /></div><p className="capture-intro">Use the Urlebird link beside a member for a temporary manual cross-check. Save only figures visible at the time of capture.</p><form className="capture-form" onSubmit={submitSnapshot}><label>Account<select value={snapshotForm.accountId} onChange={(event) => setSnapshotForm({ ...snapshotForm, accountId: event.target.value })}>{data.accounts.map((account) => <option value={account.id} key={account.id}>{account.name}</option>)}</select></label><label>Source<select value={snapshotForm.source} onChange={(event) => setSnapshotForm({ ...snapshotForm, source: event.target.value })}><option value="manual TikTok capture">TikTok visible profile</option><option value="Urlebird manual observation">Urlebird manual observation</option><option value="TikTok Studio export">TikTok Studio export</option></select></label><label>Captured at<input type="datetime-local" value={snapshotForm.capturedAt} onChange={(event) => setSnapshotForm({ ...snapshotForm, capturedAt: event.target.value })} /></label><div className="form-row"><label>Followers<input inputMode="numeric" placeholder="e.g. 661" value={snapshotForm.followers} onChange={(event) => setSnapshotForm({ ...snapshotForm, followers: event.target.value })} /></label><label>Following<input inputMode="numeric" placeholder="e.g. 250" value={snapshotForm.following} onChange={(event) => setSnapshotForm({ ...snapshotForm, following: event.target.value })} /></label></div><label>Likes<input inputMode="numeric" placeholder="e.g. 7,215" value={snapshotForm.likes} onChange={(event) => setSnapshotForm({ ...snapshotForm, likes: event.target.value.replace(/,/g, "") })} /></label><details><summary>Evidence note</summary><textarea rows={3} value={snapshotForm.evidenceNote} onChange={(event) => setSnapshotForm({ ...snapshotForm, evidenceNote: event.target.value })} /></details><button className="primary-button" type="submit"><DatabaseZap size={16} />Save snapshot</button></form>{message && <p className="form-message" role="status">{message}</p>}</article></section>
 

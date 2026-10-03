@@ -71,7 +71,7 @@ h2 { font: 500 23px/1.08 Georgia, "Times New Roman", serif; letter-spacing: -.02
 .heading-icon { color: var(--gold); }
 .chart-panel, .signal-panel { min-height: 330px; }
 .chart-wrap { padding: 3px 0 0; }
-.growth-chart { display: block; width: 100%; height: 196px; overflow: visible; } .overview-panel { margin-bottom: 12px; } .overview-chart { height: 218px; } .chart-axis-label { fill: var(--muted-2); font-size: 10px; } .chart-metric-label { fill: var(--paper); font-size: 13px; font-weight: 700; } .chart-bar.followers { fill: var(--gold); } .chart-bar.views { fill: var(--blue); } .chart-bar.likes { fill: var(--green); }
+.growth-chart { display: block; width: 100%; height: 196px; overflow: visible; } .overview-panel { margin-bottom: 12px; } .overview-chart { height: 218px; } .chart-axis-label { fill: var(--muted-2); font-size: 10px; } .chart-metric-label { fill: var(--paper); font-size: 13px; font-weight: 700; } .chart-member-label { fill: var(--muted); font-size: 10px; } .chart-legend { display: flex; gap: 20px; justify-content: center; color: var(--muted); font-size: 12px; margin-top: 2px; } .chart-legend span { display: inline-flex; align-items: center; gap: 7px; } .chart-legend i { width: 18px; height: 3px; border-radius: 3px; display: inline-block; }
 .chart-grid { stroke: rgba(255,255,255,.08); stroke-width: 1; stroke-dasharray: 3 5; }
 .chart-line { stroke: var(--gold); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .chart-dot { fill: var(--canvas-card); stroke: var(--gold-soft); stroke-width: 3; }
