@@ -726,14 +726,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
         <span>All-in-One Graph</span>
       </a>
-      <a class="rail-item" href="#comparison">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        <span>Members</span>
-      </a>
-      <a class="rail-item" href="#ideas">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-        <span>Video Lab</span>
-      </a>
       <div class="rail-divider"></div>
       <div class="rail-caption">Evidence</div>
       <div class="rail-note"><span class="status-dot"></span>15/16 accounts tracked</div>
@@ -861,131 +853,7 @@
         </div>
       </section>
 
-      <!-- Primary Grid: Decision Signal & Snapshot Form -->
-      <section class="primary-grid">
-        <article class="panel signal-panel">
-          <div class="panel-heading" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div>
-              <span class="panel-kicker">Decision signal</span>
-              <h2>What to improve next</h2>
-            </div>
-            <span style="color:var(--gold-soft); border:1px solid rgba(229,185,94,0.25); padding:5px 9px; border-radius:999px; font-size:11px;">Keep learning</span>
-          </div>
-          <div class="signal-list">
-            <div class="signal-item">
-              <span class="signal-number">01</span>
-              <div>
-                <strong>Separate reach from proof.</strong>
-                <p>Keep organic, paid, collaboration and unknown labels attached to every post before comparing performance.</p>
-              </div>
-            </div>
-            <div class="signal-item">
-              <span class="signal-number">02</span>
-              <div>
-                <strong>Make return behaviour visible.</strong>
-                <p>Use callbacks, recurring character chemistry and a clear next beat so a second visit has something to remember.</p>
-              </div>
-            </div>
-            <div class="signal-item">
-              <span class="signal-number">03</span>
-              <div>
-                <strong>Close the measurement gap.</strong>
-                <p>Tracked 14 of 16 members with verified figures. Maintain regular observations for community growth.</p>
-              </div>
-            </div>
-          </div>
-        </article>
 
-        <article class="panel capture-panel">
-          <div class="panel-heading" style="margin-bottom:14px;">
-            <span class="panel-kicker">Input / current evidence</span>
-            <h2>Record a snapshot</h2>
-          </div>
-          <p style="color:var(--muted); font-size:12px; margin-bottom:14px;">Save figures visible at the time of capture. Data immediately updates this view.</p>
-          <form class="capture-form" id="snapshot-form" onsubmit="handleSnapshotSubmit(event)">
-            <label>
-              Account
-              <select id="input-account"></select>
-            </label>
-            <div class="form-row">
-              <label>
-                Followers
-                <input type="number" id="input-followers" placeholder="e.g. 1200" required>
-              </label>
-              <label>
-                Likes
-                <input type="number" id="input-likes" placeholder="e.g. 15000">
-              </label>
-            </div>
-            <button class="primary-button" type="submit">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              Save snapshot
-            </button>
-          </form>
-        </article>
-      </section>
-
-      <!-- Video Lab: Ideas Worth Making -->
-      <section class="panel ideas-panel" id="ideas">
-        <div class="panel-heading" style="margin-bottom:18px;">
-          <span class="panel-kicker">Next / video lab</span>
-          <h2>Ideas worth making</h2>
-        </div>
-        <div class="idea-list">
-          <div class="idea-card">
-            <div class="idea-index">01</div>
-            <div>
-              <div class="idea-title-line">
-                <strong>One ordinary problem, one absurd Okenation escalation</strong>
-                <span>Collab loop</span>
-              </div>
-              <p>Put May and one member in the same recognisable Malaysian situation, then let the relationship—not a generic topic—create the turn.</p>
-            </div>
-          </div>
-          <div class="idea-card">
-            <div class="idea-index">02</div>
-            <div>
-              <div class="idea-title-line">
-                <strong>Reward the viewer who remembers</strong>
-                <span>Return trigger</span>
-              </div>
-              <p>Bring back one phrase, prop or tiny rule from an earlier post and make the callback change the scene.</p>
-            </div>
-          </div>
-          <div class="idea-card">
-            <div class="idea-index">03</div>
-            <div>
-              <div class="idea-title-line">
-                <strong>A single-camera handoff between characters</strong>
-                <span>World proof</span>
-              </div>
-              <p>End May's beat with a concrete unfinished action, then hand that same action to Nara, Shion or another member so the shared world is immediately legible.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Member Evidence Comparison Table -->
-      <section class="panel comparison-panel" id="comparison">
-        <div class="panel-heading" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <div>
-            <span class="panel-kicker">Members / evidence map</span>
-            <h2>Who is measurable right now?</h2>
-          </div>
-          <span style="color:var(--muted); font-size:11px;">14 observed · 2 unresolved boundary</span>
-        </div>
-        <div class="account-table">
-          <div class="account-header">
-            <span>Member</span>
-            <span>Followers</span>
-            <span>Change</span>
-            <span>Evidence state</span>
-          </div>
-          <div id="table-rows">
-            <!-- Populated dynamically -->
-          </div>
-        </div>
-      </section>
 
       <!-- Boundary Bar -->
       <section class="boundary-bar">
@@ -1305,48 +1173,7 @@
     }).join("");
   }
 
-  function renderTable() {
-    const table = document.getElementById("table-rows");
-    const sorted = [...accountsData].sort((a, b) => {
-      if (!a.hasData && !b.hasData) return a.name.localeCompare(b.name);
-      if (!a.hasData) return 1;
-      if (!b.hasData) return -1;
-      return (b.followers || 0) - (a.followers || 0);
-    });
 
-    table.innerHTML = sorted.map(acc => {
-      const delta = computeDelta(acc);
-      const color = MEMBER_COLORS[acc.id] || "var(--gold)";
-      return `
-        <div class="account-row">
-          <div class="account-identity">
-            <span class="avatar" style="background-color:${color}">
-              ${acc.name.slice(0, 2).toUpperCase()}
-            </span>
-            <div>
-              <div class="account-name-line">
-                <strong>${acc.name}</strong>
-              </div>
-              <span class="handle">${acc.handle || "No handle supplied"}</span>
-            </div>
-          </div>
-          <div class="account-number">${acc.hasData ? formatExact(acc.followers) : '—'}</div>
-          <div class="account-change ${delta > 0 ? 'positive' : ''}">
-            ${delta !== null ? (delta > 0 ? '↑ +' : '') + formatExact(delta) : '—'}
-          </div>
-          <div class="account-status">
-            <span class="table-dot" style="background:${acc.hasData ? 'var(--green)' : 'var(--muted-2)'}"></span>
-            <span>${acc.source}</span>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function renderSelectOptions() {
-    const sel = document.getElementById("input-account");
-    sel.innerHTML = accountsData.map(a => `<option value="${a.id}">${a.name}</option>`).join("");
-  }
 
   function switchMetric(m) {
     currentMetric = m;
@@ -1361,37 +1188,9 @@
     renderChart();
   }
 
-  function handleSnapshotSubmit(e) {
-    e.preventDefault();
-    const accId = document.getElementById("input-account").value;
-    const fVal = parseInt(document.getElementById("input-followers").value, 10);
-    const lVal = document.getElementById("input-likes").value ? parseInt(document.getElementById("input-likes").value, 10) : null;
-    
-    const target = accountsData.find(a => a.id === accId);
-    if (target) {
-      if (target.followers !== null) {
-        target.prevFollowers = target.followers;
-      }
-      target.followers = fVal;
-      if (lVal !== null) target.likes = lVal;
-      target.hasData = true;
-      target.source = "Local manual capture";
-
-      // Append to latest trajectory
-      trajectoryData[trajectoryData.length - 1][accId] = fVal;
-
-      renderChart();
-      renderTable();
-      alert(`Recorded snapshot for ${target.name}: ${fVal.toLocaleString()} followers!`);
-      document.getElementById("snapshot-form").reset();
-    }
-  }
-
   // Initial Boot
   window.addEventListener("DOMContentLoaded", () => {
-    renderSelectOptions();
     renderChart();
-    renderTable();
   });
 </script>
 </body>

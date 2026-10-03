@@ -27,12 +27,12 @@ const css = readFileSync(path.join(root, "app/globals.css"), "utf8");
 const manifest = JSON.parse(readFileSync(path.join(root, ".openai/hosting.json"), "utf8"));
 const checks = [
   [page.includes("Okenation / daily read"), "dashboard identity"],
-  [page.includes("/api/dashboard") && page.includes("/api/snapshots"), "live-ready data actions"],
-  [page.includes("MentionNetwork") && page.includes("/api/network"), "mention network integration"],
-  [page.includes("What to improve next") && page.includes("Ideas worth making"), "decision sections"],
+  [page.includes("/api/dashboard"), "live-ready dashboard data"],
+  [page.includes("AllMembersGraph"), "unified all-members telemetry graph"],
+  [!page.includes("signal-panel") && !page.includes("ideas-panel"), "clean layout without removed panels"],
   [page.includes("Unknown stays unknown") || page.includes("classification unknown"), "evidence boundary"],
   [schema.includes('sqliteTable("accounts"') && schema.includes('sqliteTable("snapshots"') && schema.includes('sqliteTable("member_checks"') && schema.includes('sqliteTable("mention_observations"'), "D1 schema"],
-  [css.includes("--gold") && css.includes(".network-graph") && css.includes("@media (max-width: 760px)"), "responsive visual system"],
+  [css.includes("--gold") && css.includes("@media (max-width: 760px)"), "responsive visual system"],
   [manifest.project_id && manifest.d1 === "DB", "Sites manifest"],
   [!page.includes("Your site is taking shape"), "starter placeholder removed"],
 ];
