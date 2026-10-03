@@ -81,60 +81,55 @@ function initials(name: string) {
   return name.split(/[ /]/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function GrowthChart({ accounts, snapshots, posts }: { accounts: Account[]; snapshots: Snapshot[]; posts: DashboardData["posts"] }) {
-  const postViews = new Map<string, number>();
-  for (const post of posts) postViews.set(post.accountId, (postViews.get(post.accountId) ?? 0) + post.views);
-  const series = [
-    { key: "followers", label: "Followers", color: "#e5b95e", values: accounts.map((account) => latestSnapshot(account.id, snapshots)?.followers ?? null) },
-    { key: "views", label: "Views", color: "#77b9d4", values: accounts.map((account) => postViews.get(account.id) ?? null) },
-    { key: "likes", label: "Likes", color: "#84c99b", values: accounts.map((account) => latestSnapshot(account.id, snapshots)?.likes ?? null) },
-  ];
-  const left = 54;
-  const right = 900;
-  const top = 24;
-  const bottom = 184;
-  const pointsFor = (values: (number | null)[]) => {
-    const max = Math.max(...values.filter((value): value is number => value !== null), 1);
-    return values.map((value, index) => ({
-      value,
-      x: accounts.length < 2 ? (left + right) / 2 : left + (index * (right - left)) / (accounts.length - 1),
-      y: value === null ? null : bottom - (value / max) * (bottom - top),
-    }));
-  };
-  const points = series.map((line) => ({ ...line, points: pointsFor(line.values) }));
+type MemberMetric = "followers" | "likes" | "views";
 
-  return (
-    <div className="chart-wrap overview-chart-wrap">
-      <svg className="growth-chart overview-chart" viewBox="0 0 920 280" role="img" aria-label="Follower, view, and like lines across Okenation members. Each line uses its own scale from zero to its highest observed value.">
-        {[0, 25, 50, 75, 100].map((tick) => {
-          const y = bottom - ((bottom - top) * tick) / 100;
-          return <g key={tick}><line x1={left} x2={right} y1={y} y2={y} className="chart-grid" /><text x={left - 9} y={y + 4} textAnchor="end" className="chart-axis-label">{tick}%</text></g>;
-        })}
-        {points.map((line) => {
-          const runs: typeof line.points[] = [];
-          let run: typeof line.points = [];
-          for (const point of line.points) {
-            if (point.value === null || point.y === null) {
-              if (run.length) runs.push(run);
-              run = [];
-            } else {
-              run.push(point);
-            }
-          }
-          if (run.length) runs.push(run);
-          return <g key={line.key}>
-            {runs.filter((segment) => segment.length > 1).map((segment, index) => <polyline key={index} points={segment.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={line.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />)}
-            {line.points.map((point, index) => point.value === null || point.y === null ? null : <circle key={accounts[index].id} cx={point.x} cy={point.y} r="4" fill={line.color}><title>{`${accounts[index].name} · ${line.label}: ${formatExact(point.value)}`}</title></circle>)}
-          </g>;
-        })}
-        {accounts.map((account, index) => {
-          const x = accounts.length < 2 ? (left + right) / 2 : left + (index * (right - left)) / (accounts.length - 1);
-          return <text key={account.id} x={x} y="200" textAnchor="end" className="chart-member-label" transform={`rotate(-42 ${x} 200)`}>{account.name.split(" / ")[0]}</text>;
-        })}
-      </svg>
-      <div className="chart-legend">{points.map((line) => <span key={line.key}><i style={{ backgroundColor: line.color }} />{line.label}</span>)}</div>
-    </div>
-  );
+function MemberGraph({ account, metric, snapshots, posts }: { account: Account; metric: MemberMetric; snapshots: Snapshot[]; posts: DashboardData["posts"] }) {
+  const metricLabel = metric === "views" ? "Views" : metric === "likes" ? "Likes" : "Followers";
+  if (metric === "views") {
+    const samples = posts.filter((post) => post.accountId === account.id);
+    if (!samples.length) return <div className="member-graph-empty">No view samples recorded</div>;
+    const max = Math.max(...samples.map((post) => post.views), 1);
+    return <svg className="member-mini-graph" viewBox="0 0 240 76" role="img" aria-label={`${account.name} sampled post views`}>
+      <line x1="8" x2="232" y1="66" y2="66" className="chart-grid" />
+      {samples.map((post, index) => {
+        const width = Math.min(18, 196 / samples.length);
+        const x = 18 + (index * 204) / samples.length;
+        const height = 5 + (post.views / max) * 53;
+        return <rect key={post.id} x={x} y={66 - height} width={width} height={height} rx="3" className="member-view-bar"><title>{`Post #${post.id.slice(-6)}: ${formatExact(post.views)} views`}</title></rect>;
+      })}
+    </svg>;
+  }
+
+  const history = snapshots
+    .filter((snapshot) => snapshot.accountId === account.id && snapshot[metric] !== null)
+    .sort((a, b) => +new Date(a.capturedAt) - +new Date(b.capturedAt));
+  if (!history.length) return <div className="member-graph-empty">No {metricLabel.toLowerCase()} snapshots recorded</div>;
+  const values = history.map((snapshot) => snapshot[metric] as number);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const points = values.map((value, index) => ({
+    value,
+    x: history.length === 1 ? 120 : 14 + (index * 212) / (history.length - 1),
+    y: history.length === 1 || max === min ? 37 : 61 - ((value - min) / (max - min)) * 48,
+  }));
+  return <svg className="member-mini-graph" viewBox="0 0 240 76" role="img" aria-label={`${account.name} ${metricLabel.toLowerCase()} history`}>
+    {[13, 37, 61].map((y) => <line key={y} x1="8" x2="232" y1={y} y2={y} className="chart-grid" />)}
+    {points.length > 1 && <polyline points={points.map((point) => `${point.x},${point.y}`).join(" ")} className={`member-history-line ${metric}`} />}
+    {points.map((point, index) => <circle key={history[index].id} cx={point.x} cy={point.y} r="4" className={`member-history-dot ${metric}`}><title>{`${formatDate(history[index].capturedAt)} · ${formatExact(point.value)} ${metricLabel.toLowerCase()}`}</title></circle>)}
+  </svg>;
+}
+
+function MemberGraphCard({ account, metric, snapshots, posts }: { account: Account; metric: MemberMetric; snapshots: Snapshot[]; posts: DashboardData["posts"] }) {
+  const memberPosts = posts.filter((post) => post.accountId === account.id);
+  const latest = [...snapshots].filter((snapshot) => snapshot.accountId === account.id && snapshot[metric as "followers" | "likes"] !== null).sort((a, b) => +new Date(b.capturedAt) - +new Date(a.capturedAt))[0];
+  const currentValue = metric === "views"
+    ? memberPosts.length ? memberPosts.reduce((total, post) => total + post.views, 0) : null
+    : latest?.[metric] ?? null;
+  const detail = metric === "views"
+    ? memberPosts.length ? `${memberPosts.length} sampled posts` : "No view data"
+    : latest ? `Updated ${formatDate(latest.capturedAt).split(",")[0]}` : "No snapshot";
+
+  return <article className="member-graph-card"><div className="member-graph-card-head"><div><strong>{account.name}</strong><span>{account.handle ?? "Profile not supplied"}</span></div><span className="member-graph-number">{formatCount(currentValue)}</span></div><div className="member-graph-label-row"><span>{metric === "views" ? "Sampled post views" : metric === "likes" ? "Profile likes" : "Followers"}</span><span>{detail}</span></div><MemberGraph account={account} metric={metric} snapshots={snapshots} posts={posts} /></article>;
 }
 
 function AccountRow({ account, snapshots }: { account: Account; snapshots: Snapshot[] }) {
@@ -169,6 +164,7 @@ export default function Home() {
   const [network, setNetwork] = useState<NetworkData>(demoNetwork);
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState("");
+  const [selectedMetric, setSelectedMetric] = useState<MemberMetric>("followers");
   const [snapshotForm, setSnapshotForm] = useState({ accountId: "may", capturedAt: new Date().toISOString().slice(0, 16), followers: "", following: "", likes: "", source: "manual TikTok capture", evidenceNote: "Only enter figures visible at the time of capture." });
 
   const refresh = useCallback(async (quiet = false) => {
@@ -299,7 +295,7 @@ export default function Home() {
         <div className="workspace">
           <section className="page-heading" id="overview"><div><div className="eyebrow"><span className="eyebrow-line" />Okenation / daily read</div><h1>Growth, with the story still intact.</h1><p>One clear view of what moved, what is still unmeasured, and what to make next.</p></div><div className="heading-meta"><span className="source-badge"><DatabaseZap size={14} />{data.storage === "database" ? "Saved snapshots" : "Verified fallback"}</span><span>Last verified: {latestMay ? formatDate(latestMay.capturedAt) : "No capture"}</span></div></section>
 
-          <section className="panel overview-panel" aria-label="Simple overview"><div className="panel-heading"><div><span className="panel-kicker">Okenation / at a glance</span><h2>Followers, views, likes</h2></div><span className="panel-context">Latest available totals</span></div><GrowthChart accounts={data.accounts} snapshots={data.snapshots} posts={data.posts} /><div className="chart-footnote"><span>Each line is scaled to its own 0–100 range; hover over a point to see its count. Views currently have observations only for May - seven sampled posts.</span></div></section>
+          <section className="panel member-graphs-panel" aria-label="Member metric graphs"><div className="panel-heading"><div><span className="panel-kicker">Okenation / member view</span><h2>Each member, one graph</h2></div><label className="metric-picker">Metric<select value={selectedMetric} onChange={(event) => setSelectedMetric(event.target.value as MemberMetric)}><option value="followers">Followers</option><option value="likes">Likes</option><option value="views">Views</option></select></label></div><p className="member-graphs-note">Followers and likes use saved profile captures. Views show sampled posts recorded for each member; view samples currently exist for May only.</p><div className="member-graph-grid">{data.accounts.map((account) => <MemberGraphCard key={account.id} account={account} metric={selectedMetric} snapshots={data.snapshots} posts={data.posts} />)}</div></section>
 
           <section className="lower-grid"><article className="panel ideas-panel" id="ideas"><div className="panel-heading"><div><span className="panel-kicker">Next / video lab</span><h2>Ideas worth making</h2></div><Lightbulb size={18} className="heading-icon" /></div><div className="idea-list">{data.ideas.map((idea, index) => <div className="idea-card" key={idea.title}><div className="idea-index">0{index + 1}</div><div className="idea-copy"><div className="idea-title-line"><strong>{idea.title}</strong><span>{idea.tag}</span></div><p>{idea.rationale}</p></div></div>)}</div><p className="disclaimer">Suggestions are creative directions from the stored signals, not promises about distribution.</p></article><article className="panel capture-panel"><div className="panel-heading"><div><span className="panel-kicker">Input / current evidence</span><h2>Record a snapshot</h2></div><Clock3 size={18} className="heading-icon" /></div><p className="capture-intro">Use the Urlebird link beside a member for a temporary manual cross-check. Save only figures visible at the time of capture.</p><form className="capture-form" onSubmit={submitSnapshot}><label>Account<select value={snapshotForm.accountId} onChange={(event) => setSnapshotForm({ ...snapshotForm, accountId: event.target.value })}>{data.accounts.map((account) => <option value={account.id} key={account.id}>{account.name}</option>)}</select></label><label>Source<select value={snapshotForm.source} onChange={(event) => setSnapshotForm({ ...snapshotForm, source: event.target.value })}><option value="manual TikTok capture">TikTok visible profile</option><option value="Urlebird manual observation">Urlebird manual observation</option><option value="TikTok Studio export">TikTok Studio export</option></select></label><label>Captured at<input type="datetime-local" value={snapshotForm.capturedAt} onChange={(event) => setSnapshotForm({ ...snapshotForm, capturedAt: event.target.value })} /></label><div className="form-row"><label>Followers<input inputMode="numeric" placeholder="e.g. 661" value={snapshotForm.followers} onChange={(event) => setSnapshotForm({ ...snapshotForm, followers: event.target.value })} /></label><label>Following<input inputMode="numeric" placeholder="e.g. 250" value={snapshotForm.following} onChange={(event) => setSnapshotForm({ ...snapshotForm, following: event.target.value })} /></label></div><label>Likes<input inputMode="numeric" placeholder="e.g. 7,215" value={snapshotForm.likes} onChange={(event) => setSnapshotForm({ ...snapshotForm, likes: event.target.value.replace(/,/g, "") })} /></label><details><summary>Evidence note</summary><textarea rows={3} value={snapshotForm.evidenceNote} onChange={(event) => setSnapshotForm({ ...snapshotForm, evidenceNote: event.target.value })} /></details><button className="primary-button" type="submit"><DatabaseZap size={16} />Save snapshot</button></form>{message && <p className="form-message" role="status">{message}</p>}</article></section>
 
