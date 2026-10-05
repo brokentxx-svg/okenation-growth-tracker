@@ -1314,5 +1314,193 @@
       "growth": 17046,
       "observedCount": 14
     }
+  },
+  {
+    "timestamp": "2026-10-05T23:28:55.891176+00:00",
+    "mytTime": "06 Oct 2026, 07:28 MYT",
+    "metrics": [
+      {
+        "id": "aurea",
+        "name": "Aurea",
+        "handle": "@aurea_is",
+        "role": "member",
+        "followers": 10300,
+        "prevFollowers": 6590,
+        "likes": 267800,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "kuro",
+        "name": "Kuro",
+        "handle": "@renjikuro1",
+        "role": "member",
+        "followers": 7808,
+        "prevFollowers": 2820,
+        "likes": 171300,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "syasya",
+        "name": "Syasya Izzati",
+        "handle": "@ai_syasy4",
+        "role": "member",
+        "followers": 5842,
+        "prevFollowers": 1760,
+        "likes": 121800,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "ailee",
+        "name": "Ailee Alfeera",
+        "handle": "@ailee.alfeera",
+        "role": "member",
+        "followers": 4906,
+        "prevFollowers": 4430,
+        "likes": 27800,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "naila",
+        "name": "Naila / Nayla",
+        "handle": "@wawanoor.ai",
+        "role": "member",
+        "followers": 4331,
+        "prevFollowers": 2580,
+        "likes": 157100,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "aurora",
+        "name": "Aurora",
+        "handle": "@putradawson",
+        "role": "member",
+        "followers": 3489,
+        "prevFollowers": 3487,
+        "likes": 3326,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "broken",
+        "name": "Broken / Oken",
+        "handle": "@brokentx",
+        "role": "human centre",
+        "followers": null,
+        "prevFollowers": 2130,
+        "likes": null,
+        "source": "Observation pending",
+        "hasData": false
+      },
+      {
+        "id": "reen",
+        "name": "Reen",
+        "handle": "@zareenqisya",
+        "role": "member",
+        "followers": 2187,
+        "prevFollowers": 1720,
+        "likes": 13500,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "paparay",
+        "name": "PapaRay",
+        "handle": "@mantaray83",
+        "role": "member",
+        "followers": 1823,
+        "prevFollowers": 1790,
+        "likes": 19100,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "nara",
+        "name": "Nara / Aisyah",
+        "handle": "@ai.aisyahinara",
+        "role": "member",
+        "followers": 1271,
+        "prevFollowers": 1260,
+        "likes": 12100,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "may",
+        "name": "May",
+        "handle": "@may_brokentx",
+        "role": "lead account",
+        "followers": 1229,
+        "prevFollowers": 758,
+        "likes": 14600,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "shion",
+        "name": "Shion / Zeros",
+        "handle": "@shion0000066",
+        "role": "member",
+        "followers": 1094,
+        "prevFollowers": null,
+        "likes": 8270,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "mira",
+        "name": "MiraAI",
+        "handle": "@hey.its.mirai",
+        "role": "member",
+        "followers": 584,
+        "prevFollowers": 366,
+        "likes": 3295,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "eriqa",
+        "name": "Eriqa",
+        "handle": "@nureriqaaulia88",
+        "role": "member",
+        "followers": 527,
+        "prevFollowers": 455,
+        "likes": 2555,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "adam",
+        "name": "Adam",
+        "handle": "@adam.fareeq2",
+        "role": "member",
+        "followers": 129,
+        "prevFollowers": 63,
+        "likes": 842,
+        "source": "TikTok live observation",
+        "hasData": true
+      },
+      {
+        "id": "butler",
+        "name": "Butler",
+        "handle": null,
+        "role": "member",
+        "followers": null,
+        "prevFollowers": null,
+        "likes": null,
+        "source": "No handle supplied",
+        "hasData": false
+      }
+    ],
+    "totals": {
+      "followers": 45520,
+      "likes": 823388,
+      "growth": 17441,
+      "observedCount": 14
+    }
   }
 ]
